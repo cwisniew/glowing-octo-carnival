@@ -10,14 +10,21 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:maptool-framework-support.helloWorld"
+    "onCommand:maptool-framework-support.connect",
+    "onCommand:maptool-framework-support.newFramework"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "maptool-framework-support.helloWorld",
-        "title": "Hello World"
+        "command": "maptool-framework-support.connect",
+        "category": "MapTool Framework",
+        "title": "Connect to MapTool"
+      },
+      {
+        "command": "maptool-framework-support.newFramework",
+        "category": "MapTool Framework",
+        "title": "New Framework"
       }
     ]
   },
@@ -40,6 +47,8 @@
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
     "eslint": "^7.19.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
     "glob": "^7.1.6",
     "mocha": "^8.2.1",
     "ts-loader": "^8.0.14",
@@ -47,5 +56,8 @@
     "vscode-test": "^1.5.0",
     "webpack": "^5.19.0",
     "webpack-cli": "^4.4.0"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
   }
 }
