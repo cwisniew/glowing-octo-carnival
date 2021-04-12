@@ -11,7 +11,8 @@
   ],
   "activationEvents": [
     "onCommand:maptool-framework-support.connect",
-    "onCommand:maptool-framework-support.newFramework"
+    "onCommand:maptool-framework-support.newFramework",
+    "onCommand:maptool-framework-support.uploadFramework"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -25,6 +26,11 @@
         "command": "maptool-framework-support.newFramework",
         "category": "MapTool Framework",
         "title": "New Framework"
+      },
+      {
+        "command": "maptool-framework-support.uploadFramework",
+        "category": "MapTool Framework",
+        "title": "Upload Framework"
       }
     ]
   },

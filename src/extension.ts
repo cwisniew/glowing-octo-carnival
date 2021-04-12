@@ -15,9 +15,9 @@ export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
+  /**
+   * Command to create a new MapTool Framework.
+   */
   context.subscriptions.push(
     vscode.commands.registerCommand(
       'maptool-framework-support.newFramework',
@@ -38,6 +38,9 @@ export function activate(context: vscode.ExtensionContext) {
     ),
   );
 
+  /**
+   * Command to connect to MapTool server
+   */
   context.subscriptions.push(
     vscode.commands.registerCommand(
       'maptool-framework-support.connect',
@@ -51,6 +54,22 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage(
           `Connected to ${host}:${port} MapTool Version ${maptoolVersion}, WebApp Version ${webAppVersion}`,
         );
+      },
+    ),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'maptool-framework-support.uploadFramework',
+      async () => {
+        if (!framework) {
+          vscode.window.showErrorMessage('No Framework found');
+          return;
+        }
+        vscode.window.showInformationMessage(
+          `Uploading Framework ${framework.getId()}`,
+        );
+        framework.uploadFramework();
       },
     ),
   );
