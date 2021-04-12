@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { downloadDirToExecutablePath } from 'vscode-test/out/util';
 import { Framework } from './framework/Framework';
 import { frameworkCreator } from './framework/frameworkCreator';
 import { MapTool } from './maptool/MapTool';
@@ -20,21 +21,19 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       'maptool-framework-support.newFramework',
-      () => {
+      async () => {
         if (!maptool) {
           vscode.window.showInformationMessage(
             'Connect to MapTool before creating a new Framework',
           );
           return;
         }
-        frameworkCreator(maptool)
-          .then((fw) => {
-            framework = fw;
-          })
-          .catch((err) => {
-            //vscode.window.showInformationMessage(err.message);
-            vscode.window.showInformationMessage('error error error!');
-          });
+        try {
+          framework = await frameworkCreator(maptool);
+          vscode.window.showInformationMessage('Framework created.');
+        } catch (e) {
+          vscode.window.showInformationMessage(e.message);
+        }
       },
     ),
   );

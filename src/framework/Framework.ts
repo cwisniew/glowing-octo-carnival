@@ -38,15 +38,11 @@ export class Framework {
       throw new Error('Connect to MapTool before creating a new Framework');
     }
 
-    try {
-      const id = await Framework.getNewId(maptool);
-      const framework = new Framework(maptool, id, workspaceFolder);
+    const id = await Framework.getNewId(maptool);
+    const framework = new Framework(maptool, id, workspaceFolder);
 
-      framework.initFrameworkDirectory();
-      return framework;
-    } catch (e) {
-      throw e;
-    }
+    await framework.initFrameworkDirectory();
+    return framework;
   }
 
   /**
@@ -70,11 +66,7 @@ export class Framework {
    */
   public async initFrameworkDirectory(): Promise<void> {
     await this.createFrameworkJsonFile();
-    try {
-      await this.createFrameworkDirectories();
-    } catch (e) {
-      throw e;
-    }
+    await this.createFrameworkDirectories();
   }
 
   /**

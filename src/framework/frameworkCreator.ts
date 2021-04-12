@@ -48,10 +48,5 @@ export const frameworkCreator = async (
     }
   }
 
-  try {
-    const framework = Framework.createNewFramework(maptool, frameworkDirectory);
-    return framework;
-  } catch (e) {
-    throw e;
-  }
+  return Framework.createNewFramework(maptool, frameworkDirectory);
 };
