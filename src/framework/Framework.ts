@@ -6,7 +6,7 @@ import axios from 'axios';
 const vfs = vscode.workspace.fs;
 
 const NEW_FRAMEWORK_ID_URL_PART = '/frameworks/newFrameworkId';
-const CRATE_FRAMEWORK_URL_PART = '/frameworks/';
+const CREATE_FRAMEWORK_URL_PART = '/frameworks/';
 
 /**
  * Class used to represent a framework.
@@ -89,14 +89,17 @@ export class Framework {
   public async uploadFramework(): Promise<void> {
     // Request a new id for this framework
     const webApplUrlPrefix = this.maptool.getWebAppUrlPrefix();
+    if (!webApplUrlPrefix) {
+      throw new Error('Web App URL Prefix is undefined.');
+    }
     const contents = fs.readFileSync(this.frameworkInfoFile.fsPath).toString();
-    const response = await axios.put(
-      webApplUrlPrefix + NEW_FRAMEWORK_ID_URL_PART,
+    const { data } = await axios.put(
+      webApplUrlPrefix + CREATE_FRAMEWORK_URL_PART,
       { frameworkInfo: contents },
     );
 
-    if (response.data.status !== 'ok') {
-      throw new Error(response.data.error);
+    if (data.status !== 'ok') {
+      throw new Error(data.error);
     }
   }
 
@@ -148,9 +151,7 @@ export class Framework {
    */
   private createFrameworkDirectory(subpath: string): boolean {
     const path = this.getDirectoryPath(subpath);
-    console.log(path.fsPath);
     if (fs.existsSync(path.fsPath)) {
-      console.log(`path exists: ${path.fsPath}`);
       const stat = fs.lstatSync(path.fsPath);
       if (!stat.isDirectory()) {
         return false;

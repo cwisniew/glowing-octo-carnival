@@ -69,7 +69,11 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage(
           `Uploading Framework ${framework.getId()}`,
         );
-        framework.uploadFramework();
+        try {
+          await framework.uploadFramework();
+        } catch (error) {
+          vscode.window.showErrorMessage(error.messsage);
+        }
       },
     ),
   );
