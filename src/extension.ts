@@ -72,7 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
         try {
           await framework.uploadFramework();
         } catch (error) {
-          vscode.window.showErrorMessage(error.messsage);
+          vscode.window.showErrorMessage(error.message);
         }
       },
     ),

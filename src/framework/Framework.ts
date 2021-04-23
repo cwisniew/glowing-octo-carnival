@@ -95,8 +95,10 @@ export class Framework {
     const contents = fs.readFileSync(this.frameworkInfoFile.fsPath).toString();
     const { data } = await axios.put(
       webApplUrlPrefix + CREATE_FRAMEWORK_URL_PART,
-      { frameworkInfo: contents },
+      { frameworkInfo: JSON.parse(contents) },
     );
+
+    console.log(data);
 
     if (data.status !== 'ok') {
       throw new Error(data.error);
@@ -110,14 +112,15 @@ export class Framework {
     // default values for the framework file.
     const frameworkInfo = {
       id: this.id,
-      name: 'myFramework',
+      name: 'HelloWorld',
+      namespace: 'rptools.helloworld',
       version: '1.0.0',
       url: 'www.example.com',
-      githb: 'yourname/yourrepo',
+      githb: 'RPTools/helloworld',
       exportedFunctions: [],
       exportedProperties: [],
       libToken: {
-        name: 'myLibToken',
+        name: 'HelloWorld',
         version: '1.0.0',
         definedFunctions: [],
         libraryProperties: [],
