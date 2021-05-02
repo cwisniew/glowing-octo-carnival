@@ -23,14 +23,6 @@ export class StarterFramework {
     );
   }
 
-  private async createLibTokenFile() {
-    await Utils.copyResource(
-      'libtoken.json',
-      this.framework.getDirectoryPath('libtoken.json').fsPath,
-      this.maptool.getExtensionContext(),
-    );
-  }
-
   private async createFrameworkDirectories(): Promise<void> {
     const failures: string[] = [];
 
@@ -62,7 +54,6 @@ export class StarterFramework {
 
   public async create() {
     this.createInfoFile();
-    await this.createLibTokenFile();
     await this.createFrameworkDirectories();
     await Promise.all([this.createExamples()]);
   }

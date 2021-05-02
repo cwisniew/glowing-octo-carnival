@@ -5,5 +5,13 @@
   "url": "www.example.com",
   "githb": "RPTools/helloworld",
   "exportedFunctions": [],
-  "exportedProperties": []
+  "exportedProperties": [],
+  "libTokens": [
+    {
+      "name": "HelloWorld",
+      "version": "1.0.0",
+      "macros": [{ "name": "hello", "path": "mtmacro/hello-world.mtm" }],
+      "properties": []
+    }
+  ]
 }

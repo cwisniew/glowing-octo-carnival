@@ -21,7 +21,6 @@ const FRAMEWORK_SUBDIRS = [
 
 interface FrameWorkAPIInfo {
   frameworkInfo: any;
-  libTokenInfo?: any;
 }
 
 /**
@@ -125,9 +124,7 @@ export class Framework {
       libToken = fs.readFileSync(this.libTokenInfoFile.fsPath).toString();
     }
     let sendData: FrameWorkAPIInfo = { frameworkInfo: JSON.parse(contents) };
-    if (libToken) {
-      sendData = { ...sendData, libTokenInfo: JSON.parse(libToken) };
-    }
+
     const { data } = await axios.put(
       webApplUrlPrefix + CREATE_FRAMEWORK_URL_PART,
       sendData,

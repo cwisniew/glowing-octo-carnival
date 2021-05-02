@@ -1,6 +1,0 @@
-{
-  "name": "HelloWorld",
-  "version": "1.0.0",
-  "macros": [{ "name": "hello", "path": "mtmacro/hello-world.mtm" }],
-  "properties": []
-}
