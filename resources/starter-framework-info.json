@@ -1,0 +1,9 @@
+{
+  "name": "HelloWorld",
+  "namespace": "rptools.helloworld",
+  "version": "1.0.0",
+  "url": "www.example.com",
+  "githb": "RPTools/helloworld",
+  "exportedFunctions": [],
+  "exportedProperties": []
+}

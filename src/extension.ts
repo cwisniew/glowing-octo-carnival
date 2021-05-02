@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'maptool-framework-support.connect',
       async () => {
-        maptool = new MapTool('localhost', 8080);
+        maptool = new MapTool('localhost', 8080, context);
         await maptool.connect();
         const host = maptool.getHost();
         const port = maptool.getPort();

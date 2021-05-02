@@ -2,11 +2,27 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { MapTool } from '../maptool/MapTool';
 import axios from 'axios';
+import { StarterFramework } from './StarterFramework';
 
 const vfs = vscode.workspace.fs;
 
 const NEW_FRAMEWORK_ID_URL_PART = '/frameworks/newFrameworkId';
 const CREATE_FRAMEWORK_URL_PART = '/frameworks/';
+
+const FRAMEWORK_SUBDIRS = [
+  { description: 'Source Directory', path: 'src' },
+  { description: 'MapTool Macro Source', path: 'src/mtmacro' },
+  { description: 'Resources Directory', path: 'resources' },
+  { description: 'Static Data', path: 'resources/static-data' },
+  { description: 'Data', path: 'resources/data' },
+  { description: 'Images', path: 'resources/images' },
+  { description: 'Audion', path: 'resources/audio' },
+];
+
+interface FrameWorkAPIInfo {
+  frameworkInfo: any;
+  libTokenInfo?: any;
+}
 
 /**
  * Class used to represent a framework.
@@ -14,6 +30,9 @@ const CREATE_FRAMEWORK_URL_PART = '/frameworks/';
 export class Framework {
   /** The framework.json file. */
   private readonly frameworkInfoFile: vscode.Uri;
+
+  /** The libtoken.json file. */
+  private readonly libTokenInfoFile: vscode.Uri;
 
   /**
    * Returns a new id that can be used in a new framework.
@@ -66,6 +85,10 @@ export class Framework {
       this.workspaceFolder,
       'framework.json',
     );
+    this.libTokenInfoFile = vscode.Uri.joinPath(
+      this.workspaceFolder,
+      'libtoken.json',
+    );
   }
 
   /**
@@ -79,8 +102,12 @@ export class Framework {
    * Initialises the contents of the framework directory for a new framework.
    */
   public async initFrameworkDirectory(): Promise<void> {
-    await this.createFrameworkJsonFile();
-    await this.createFrameworkDirectories();
+    const fw = new StarterFramework(this, this.maptool);
+    await fw.create();
+
+    // Open the new framework file in the editor.
+    const doc = await vscode.workspace.openTextDocument(this.frameworkInfoFile);
+    const editor = await vscode.window.showTextDocument(doc, 1, false);
   }
 
   /**
@@ -93,9 +120,17 @@ export class Framework {
       throw new Error('Web App URL Prefix is undefined.');
     }
     const contents = fs.readFileSync(this.frameworkInfoFile.fsPath).toString();
+    let libToken = undefined;
+    if (fs.existsSync(this.libTokenInfoFile.fsPath)) {
+      libToken = fs.readFileSync(this.libTokenInfoFile.fsPath).toString();
+    }
+    let sendData: FrameWorkAPIInfo = { frameworkInfo: JSON.parse(contents) };
+    if (libToken) {
+      sendData = { ...sendData, libTokenInfo: JSON.parse(libToken) };
+    }
     const { data } = await axios.put(
       webApplUrlPrefix + CREATE_FRAMEWORK_URL_PART,
-      { frameworkInfo: JSON.parse(contents) },
+      sendData,
     );
 
     console.log(data);
@@ -106,44 +141,11 @@ export class Framework {
   }
 
   /**
-   * Creates the framework.json file in the workspace and opens it in a text editor.
-   */
-  private async createFrameworkJsonFile(): Promise<void> {
-    // default values for the framework file.
-    const frameworkInfo = {
-      id: this.id,
-      name: 'HelloWorld',
-      namespace: 'rptools.helloworld',
-      version: '1.0.0',
-      url: 'www.example.com',
-      githb: 'RPTools/helloworld',
-      exportedFunctions: [],
-      exportedProperties: [],
-      libToken: {
-        name: 'HelloWorld',
-        version: '1.0.0',
-        definedFunctions: [],
-        libraryProperties: [],
-      },
-    };
-
-    // Create the starter framework.json file in the selected directory
-    fs.writeFileSync(
-      this.frameworkInfoFile.fsPath,
-      JSON.stringify(frameworkInfo, null, 2),
-    );
-
-    // Open the new framework file in the editor.
-    const doc = await vscode.workspace.openTextDocument(this.frameworkInfoFile);
-    const editor = await vscode.window.showTextDocument(doc, 1, false);
-  }
-
-  /**
    * Returns the path to a given subdirectory within the workspace for the framework.
    * @param subpath the path of the subdirectory.
    * @returns the path to the subdirectory within the workspace.
    */
-  private getDirectoryPath(subpath: string): vscode.Uri {
+  public getDirectoryPath(subpath: string): vscode.Uri {
     return vscode.Uri.joinPath(this.workspaceFolder, subpath);
   }
 
@@ -152,7 +154,7 @@ export class Framework {
    * @param subpath the subdirectory within the workspace.
    * @returns {@code true} if the directory was created or exists, {@code false} otherwise.
    */
-  private createFrameworkDirectory(subpath: string): boolean {
+  public createFrameworkDirectory(subpath: string): boolean {
     const path = this.getDirectoryPath(subpath);
     if (fs.existsSync(path.fsPath)) {
       const stat = fs.lstatSync(path.fsPath);
@@ -166,31 +168,15 @@ export class Framework {
     return true;
   }
 
-  /**
-   * Creates all the subdirectories for the framework.
-   */
-  private async createFrameworkDirectories(): Promise<void> {
-    const subdirs = [
-      'src',
-      'src/mtmacro',
-      'resources',
-      'resources/static-data',
-      'resources/data',
-      'resources/images',
-      'resources/audio',
-    ];
-    const failures: string[] = [];
+  public getWorkspaceFolder(): vscode.Uri {
+    return this.workspaceFolder;
+  }
 
-    subdirs.forEach((sd) => {
-      if (!this.createFrameworkDirectory(sd)) {
-        failures.push(sd);
-      }
-    });
+  public getFrameworkInfoFile(): vscode.Uri {
+    return this.frameworkInfoFile;
+  }
 
-    if (failures.length === 1) {
-      throw new Error(`Can not create directory: ${failures.toString()}`);
-    } else if (failures.length > 1) {
-      throw new Error(`Can not create directories: ${failures.toString()}`);
-    }
+  public getFrameworkSubdirs(): { description: string; path: string }[] {
+    return FRAMEWORK_SUBDIRS;
   }
 }

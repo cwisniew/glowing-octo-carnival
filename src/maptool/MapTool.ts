@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ExtensionContext } from 'vscode';
 
 export class MapTool {
   private connected: boolean = false;
@@ -7,7 +8,11 @@ export class MapTool {
 
   private webAppUrlPrefix: string | undefined;
 
-  constructor(private readonly host: string, private readonly port: number) {}
+  constructor(
+    private readonly host: string,
+    private readonly port: number,
+    private readonly extensionContext: ExtensionContext,
+  ) {}
 
   public async connect(): Promise<void> {
     this.webAppUrlPrefix = `http://${this.host}:${this.port}/maptool`;
@@ -43,5 +48,9 @@ export class MapTool {
 
   public getWebAppUrlPrefix(): string | undefined {
     return this.webAppUrlPrefix;
+  }
+
+  public getExtensionContext(): ExtensionContext {
+    return this.extensionContext;
   }
 }
